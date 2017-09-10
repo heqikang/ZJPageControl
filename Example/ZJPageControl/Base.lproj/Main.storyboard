@@ -22,11 +22,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="K2h-O9-BjN" customClass="ZJPageControl">
-                                <rect key="frame" x="82" y="80" width="210" height="170"/>
+                                <rect key="frame" x="0.0" y="80" width="375" height="170"/>
                                 <color key="backgroundColor" red="0.1333333333" green="0.68235294120000001" blue="0.90196078430000004" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="170" id="Go6-bL-vpb"/>
-                                    <constraint firstAttribute="width" constant="210" id="bUD-0g-rYA"/>
                                 </constraints>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="color" keyPath="pageIndicatorTintColor">
@@ -57,7 +56,8 @@
                         <color key="backgroundColor" name="alternateSelectedControlTextColor" catalog="System" colorSpace="catalog"/>
                         <constraints>
                             <constraint firstItem="K2h-O9-BjN" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="60" id="2ox-0f-A1O"/>
-                            <constraint firstItem="K2h-O9-BjN" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="FcJ-h5-mI2"/>
+                            <constraint firstItem="K2h-O9-BjN" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="6Y0-im-hqH"/>
+                            <constraint firstAttribute="trailing" secondItem="K2h-O9-BjN" secondAttribute="trailing" id="wsh-4P-mrb"/>
                         </constraints>
                     </view>
                 </viewController>

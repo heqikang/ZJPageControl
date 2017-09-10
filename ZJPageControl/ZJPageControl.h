@@ -17,8 +17,8 @@ IB_DESIGNABLE
 
 @property (nonatomic, assign) IBInspectable CGFloat padding;
 
-@property(nonatomic, assign) IBInspectable NSUInteger numberOfPages;
-@property(nonatomic, assign) IBInspectable NSUInteger currentPage;
+@property(nonatomic, assign) IBInspectable NSInteger numberOfPages;
+@property(nonatomic, assign) IBInspectable NSInteger currentPage;
 
 @property(nonatomic,strong) IBInspectable UIColor *pageIndicatorTintColor;
 @property(nonatomic,strong) IBInspectable UIColor *currentPageIndicatorTintColor;
