@@ -13,13 +13,14 @@ ZJPageControl is a custom animated page control to replace UIPageControl, inspir
 
 #### Storyboard
 
-Just drop UIView and set its class to be one of CHIPageControls. 
+Just drop UIView and set it's class to be ZJPageControl. 
 
 ![ibdesignable.gif](https://github.com/EvanZhou0319/ZJPageControl/blob/master/Example/ibdesignable.gif)
 
 #### Code
 
 ```
+// init
 ZJPageControl *pageControl = [[ZJPageControl alloc] initWithFrame:pageControlFrame];
 pageControl.numberOfPages = 4;
 pageControl.padding = 8;
@@ -29,11 +30,6 @@ pageControl.pageIndicatorTintColor = [UIColor blueColor];
 pageControl.currentPageIndicatorTintColor = [UIColor redColor];
 [pageControl addTarget:self action:@selector(pageControlValueChanged:) forControlEvents:UIControlEventValueChanged];
 
-```
-
-#### Set current page
-
-```
 // set current page
 pageControl.currentPage = 2;
 
