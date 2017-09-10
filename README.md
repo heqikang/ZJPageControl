@@ -9,6 +9,20 @@ ZJPageControl is a custom animated page control to replace UIPageControl, inspir
 - iOS 7.0+
 - Xcode 8+
 
+## Installation
+
+#### Manually
+
+Just add the `ZJPageControl` folder to your project
+
+#### CocoaPods
+
+use [CocoaPods](https://cocoapods.org/) with Podfile:
+
+```
+pod 'ZJPageControl', '~> 1.0'
+```
+
 ## Usage
 
 #### Storyboard
@@ -35,20 +49,6 @@ pageControl.currentPage = 2;
 
 // set current page with animation
 [pageControl setCurrentPage:2 animated:YES];
-```
-
-## Installation
-
-#### Manually
-
-Just add the `ZJPageControl` folder to your project
-
-#### CocoaPods
-
-use [CocoaPods](https://cocoapods.org/) with Podfile:
-
-```
-pod 'ZJPageControl', '~> 1.0'
 ```
 
 ## License
