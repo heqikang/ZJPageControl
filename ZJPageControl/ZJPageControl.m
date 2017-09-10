@@ -51,7 +51,6 @@ static const CGFloat kZJPageControlDefaultAnimationDuration = 0.3f;
     _pageIndicatorTintColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.6];
     _currentPageIndicatorTintColor = [UIColor whiteColor];
     
-    self.backgroundColor = [UIColor clearColor];
     self.contentMode = UIViewContentModeRedraw;
     
     [self.layer addSublayer:self.shapeLayer];
@@ -222,12 +221,12 @@ static const CGFloat kZJPageControlDefaultAnimationDuration = 0.3f;
     [self setNeedsDisplay];
 }
 
-- (void)setNumberOfPages:(NSInteger)numberOfPages {
+- (void)setNumberOfPages:(NSUInteger)numberOfPages {
     _numberOfPages = numberOfPages;
     [self setNeedsDisplay];
 }
 
-- (void)setCurrentPage:(NSInteger)currentPage {
+- (void)setCurrentPage:(NSUInteger)currentPage {
     [self setCurrentPage:currentPage animated:NO];
 }
 
