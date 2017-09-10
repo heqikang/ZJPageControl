@@ -1,12 +1,23 @@
 # ZJPageControl
 
-![demo](https://github.com/EvanZhou0319/ZJPageControl/blob/master/Example/demo.gif)
+![demo.gif](https://github.com/EvanZhou0319/ZJPageControl/blob/master/Example/demo.gif)
 
 ZJPageControl is a custom animated page control to replace UIPageControl, inspired by [Tamino Martinius](https://dribbble.com/shots/2658222-Onboarding-Nav-Line-Animation).
 
+## Requirements
+
+- iOS 7.0+
+- Xcode 8+
+
 ## Usage
 
-#### Init
+#### Storyboard
+
+Just drop UIView and set its class to be one of CHIPageControls. 
+
+![ibdesignable.gif](https://github.com/EvanZhou0319/ZJPageControl/blob/master/Example/ibdesignable.gif)
+
+#### Code
 
 ```
 ZJPageControl *pageControl = [[ZJPageControl alloc] initWithFrame:pageControlFrame];
@@ -16,6 +27,8 @@ pageControl.radius = 4;
 pageControl.lineWidth = 2;
 pageControl.pageIndicatorTintColor = [UIColor blueColor];
 pageControl.currentPageIndicatorTintColor = [UIColor redColor];
+[pageControl addTarget:self action:@selector(pageControlValueChanged:) forControlEvents:UIControlEventValueChanged];
+
 ```
 
 #### Set current page
