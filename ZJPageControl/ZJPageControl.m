@@ -83,7 +83,7 @@ static const CGFloat kZJPageControlDefaultAnimationDuration = 0.3f;
 
 #pragma mark - Event Response
 
-- (void)onTapped:(UITapGestureRecognizer*)gesture {
+- (void)onTapped:(UITapGestureRecognizer *)gesture {
     CGPoint touchPoint = [gesture locationInView:[gesture view]];
     
     BOOL isValueChanged = NO;
