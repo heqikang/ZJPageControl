@@ -86,22 +86,22 @@ static const CGFloat kZJPageControlDefaultAnimationDuration = 0.3f;
 - (void)onTapped:(UITapGestureRecognizer *)gesture {
     CGPoint touchPoint = [gesture locationInView:[gesture view]];
     
-    BOOL isValueChanged = NO;
+    BOOL hasPageChanged = NO;
     if (touchPoint.x < CGRectGetWidth(self.frame) / 2 ) {
         // move left
         if (self.currentPage > 0) {
             self.currentPage--;
-            isValueChanged = YES;
+            hasPageChanged = YES;
         }
     } else {
         // move right
         if (self.currentPage < self.numberOfPages - 1) {
             self.currentPage++;
-            isValueChanged = YES;
+            hasPageChanged = YES;
         }
     }
     
-    if (isValueChanged) {
+    if (hasPageChanged) {
         [self _moveToPageWithAnimated:YES];
         [self sendActionsForControlEvents:UIControlEventValueChanged];
     }
