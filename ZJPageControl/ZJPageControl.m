@@ -201,11 +201,6 @@ static const CGFloat kZJPageControlDefaultAnimationDuration = 0.3f;
 
 #pragma mark - Setter
 
-- (void)setHidesForSinglePage:(BOOL)hidesForSinglePage {
-    _hidesForSinglePage = hidesForSinglePage;
-    [self setNeedsDisplay];
-}
-
 - (void)setLineWidth:(CGFloat)lineWidth {
     _lineWidth = lineWidth;
     self.shapeLayer.lineWidth = lineWidth;
@@ -242,6 +237,11 @@ static const CGFloat kZJPageControlDefaultAnimationDuration = 0.3f;
 - (void)setCurrentPageIndicatorTintColor:(UIColor *)currentPageIndicatorTintColor {
     _currentPageIndicatorTintColor = currentPageIndicatorTintColor;
     self.shapeLayer.strokeColor = currentPageIndicatorTintColor.CGColor;
+    [self setNeedsDisplay];
+}
+
+- (void)setHidesForSinglePage:(BOOL)hidesForSinglePage {
+    _hidesForSinglePage = hidesForSinglePage;
     [self setNeedsDisplay];
 }
 
