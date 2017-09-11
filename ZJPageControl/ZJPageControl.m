@@ -9,9 +9,12 @@
 #import "ZJPageControl.h"
 
 static const CGFloat kZJPageControlDefaultLineWidth = 2.0f;
-static const CGFloat kZJPageControlDefaultPadding = 20.0f;
 static const CGFloat kZJPageControlDefaultRadius = 10.0f;
+static const CGFloat kZJPageControlDefaultPadding = 20.0f;
 static const CGFloat kZJPageControlDefaultAnimationDuration = 0.3f;
+
+#define kZJPageControlDefaultPageIndicatorTintColor [UIColor colorWithWhite:1 alpha:0.6]
+#define kZJPageControlDefaultCurrentPageIndicatorTintColor [UIColor whiteColor]
 
 @interface ZJPageControl()<CAAnimationDelegate>
 @property (nonatomic, strong) CAShapeLayer *shapeLayer;
@@ -37,19 +40,16 @@ static const CGFloat kZJPageControlDefaultAnimationDuration = 0.3f;
 }
 
 - (void)setup {
-    _lastPage = 0;
-    
     _lineWidth = kZJPageControlDefaultLineWidth;
-    _padding = kZJPageControlDefaultPadding;
     _radius = kZJPageControlDefaultRadius;
+    _padding = kZJPageControlDefaultPadding;
     
-    _hidesForSinglePage = NO;
-    
+    _lastPage = 0;
     _numberOfPages = 0;
     _currentPage = 0;
     
-    _pageIndicatorTintColor = [UIColor colorWithRed:1 green:1 blue:1 alpha:0.6];
-    _currentPageIndicatorTintColor = [UIColor whiteColor];
+    _pageIndicatorTintColor = kZJPageControlDefaultPageIndicatorTintColor;
+    _currentPageIndicatorTintColor = kZJPageControlDefaultCurrentPageIndicatorTintColor;
     
     [self.layer addSublayer:self.shapeLayer];
     
@@ -62,24 +62,21 @@ static const CGFloat kZJPageControlDefaultAnimationDuration = 0.3f;
         return;
     }
     
-    NSInteger totalWidth = self.numberOfPages * self.radius * 2 + (self.numberOfPages - 1) * self.padding;
-    
     CGContextRef context = UIGraphicsGetCurrentContext();
-
     for (int i = 0; i < self.numberOfPages; i++) {
-        int minX = (self.frame.size.width - totalWidth) / 2 + (self.radius * 2 + self.padding) * i;
+        int minX = (CGRectGetWidth(self.frame) - [self _totalPageIndicatorWidth]) / 2 + (self.radius * 2 + self.padding) * i;
+        
         CGContextSetStrokeColorWithColor(context, self.pageIndicatorTintColor.CGColor);
         CGContextSetLineWidth(context, self.lineWidth);
-        CGContextAddArc(context, minX + self.radius, self.frame.size.height / 2, self.radius, 0, 2*M_PI, 0);
+        CGContextAddArc(context, minX + self.radius, CGRectGetHeight(self.frame) / 2, self.radius, 0, M_PI * 2, 0);
         CGContextDrawPath(context, kCGPathStroke);
     }
     
-    [self resetPath];
+    [self _moveToPageWithAnimated:NO];
 }
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    
     self.shapeLayer.frame = self.bounds;
     [self setNeedsDisplay];
 }
@@ -90,7 +87,7 @@ static const CGFloat kZJPageControlDefaultAnimationDuration = 0.3f;
     CGPoint touchPoint = [gesture locationInView:[gesture view]];
     
     BOOL isValueChanged = NO;
-    if (touchPoint.x < self.frame.size.width / 2 ) {
+    if (touchPoint.x < CGRectGetWidth(self.frame) / 2 ) {
         // move left
         if (self.currentPage > 0) {
             self.currentPage--;
@@ -105,34 +102,28 @@ static const CGFloat kZJPageControlDefaultAnimationDuration = 0.3f;
     }
     
     if (isValueChanged) {
-        [self movePageWithAnimated:YES];
+        [self _moveToPageWithAnimated:YES];
         [self sendActionsForControlEvents:UIControlEventValueChanged];
     }
 }
 
 #pragma mark - Private Methods
 
-- (void)resetPath {
-    self.shapeLayer.path = [self pathWithAnimated:NO];
-    self.shapeLayer.strokeStart = 0;
-    self.shapeLayer.strokeEnd = 1;
-}
-
-- (void)movePageWithAnimated:(BOOL)animated {
-    self.shapeLayer.path = [self pathWithAnimated:animated];
+- (void)_moveToPageWithAnimated:(BOOL)animated {
+    self.shapeLayer.path = [self _pathWithAnimated:animated];
     if (animated) {
-        int pageNumber = abs(self.currentPage - self.lastPage);
-        CGFloat lineWidth = (self.radius * 2 + self.padding) * pageNumber;
+        long pageNumber = labs(self.currentPage - self.lastPage);
+        CGFloat linePathLength = (self.radius * 2 + self.padding) * pageNumber;
         
-        CGFloat circleWidth = 2 * M_PI * self.radius;
-        CGFloat totalWidth = circleWidth * 2 + lineWidth;
+        CGFloat circlePathLength = M_PI * 2 * self.radius;
+        CGFloat totalPathLegnth = circlePathLength * 2 + linePathLength;
         
         CABasicAnimation *strokeStartAnimation = [CABasicAnimation animationWithKeyPath:@"strokeStart"];
         strokeStartAnimation.fromValue = @(0);
-        strokeStartAnimation.toValue = @(1 - circleWidth / totalWidth);
+        strokeStartAnimation.toValue = @(1 - circlePathLength / totalPathLegnth);
         
         CABasicAnimation *strokeEndAnimation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
-        strokeEndAnimation.fromValue = @(circleWidth / totalWidth);
+        strokeEndAnimation.fromValue = @(circlePathLength / totalPathLegnth);
         strokeEndAnimation.toValue = @(1);
         
         CAAnimationGroup *animationGroup = [CAAnimationGroup animation];
@@ -143,50 +134,56 @@ static const CGFloat kZJPageControlDefaultAnimationDuration = 0.3f;
     }
 }
 
-- (CGPoint)centerOfCircleAtPage:(NSInteger)page {
-    NSInteger totalWidth = self.numberOfPages * self.radius * 2 + (self.numberOfPages - 1) * self.padding;
-    CGFloat midX = (self.frame.size.width - totalWidth) / 2 + (self.radius * 2 + self.padding) * page + self.radius;
-    CGPoint center = CGPointMake(midX, self.frame.size.height / 2);
-    return center;
-}
-
-- (CGPathRef)pathWithAnimated:(BOOL)animated {
+- (CGPathRef)_pathWithAnimated:(BOOL)animated {
     if ((self.numberOfPages <= 1 && self.hidesForSinglePage) || self.numberOfPages == 0) {
         return nil;
     }
     
     BOOL clockwise = self.lastPage > self.currentPage;
     
-    CGFloat startAngle = 0.5 * M_PI;
-    
+    CGFloat startAngle = M_PI / 2;
     CGFloat endAngle;
     if (clockwise) {
-        endAngle = startAngle + 2 * M_PI;
+        endAngle = startAngle + M_PI * 2;
     } else {
-        endAngle = startAngle - 2 * M_PI;
+        endAngle = startAngle - M_PI * 2;
     }
     
-    CGPoint lastCircleCenter = [self centerOfCircleAtPage:self.lastPage];
-    CGPoint currentCircleCenter = [self centerOfCircleAtPage:self.currentPage];
-
     UIBezierPath *path = [UIBezierPath bezierPath];
     if (animated) {
+        // last circle
+        CGPoint lastCircleCenter = [self _centerOfCircleAtPage:self.lastPage];
         [path addArcWithCenter:lastCircleCenter radius:self.radius startAngle:startAngle endAngle:endAngle clockwise:clockwise];
         
         // Line
         CGFloat lineWidth = (self.radius * 2 + self.padding) * (self.currentPage - self.lastPage);
-        
         [path moveToPoint:CGPointMake(lastCircleCenter.x, lastCircleCenter.y + self.radius)];
         [path addLineToPoint:CGPointMake(lastCircleCenter.x + lineWidth, lastCircleCenter.y + self.radius)];
     }
+    
+    // current circle
+    CGPoint currentCircleCenter = [self _centerOfCircleAtPage:self.currentPage];
     [path addArcWithCenter:currentCircleCenter radius:self.radius startAngle:startAngle endAngle:endAngle clockwise:clockwise];
     return path.CGPath;
+}
+
+- (CGPoint)_centerOfCircleAtPage:(NSInteger)page {
+    CGFloat midX = (CGRectGetWidth(self.frame) - [self _totalPageIndicatorWidth]) / 2 + (self.radius * 2 + self.padding) * page + self.radius;
+    CGPoint center = CGPointMake(midX, CGRectGetHeight(self.frame) / 2);
+    return center;
+}
+
+- (CGFloat)_totalPageIndicatorWidth {
+    CGFloat width = (self.radius * 2 + self.padding) * self.numberOfPages - self.padding;
+    return width;
 }
 
 #pragma mark - CAAnimationDelegate
 
 - (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag {
-    [self resetPath];
+    if (flag) {
+        [self _moveToPageWithAnimated:NO];
+    }
 }
 
 #pragma mark - Getter
@@ -226,6 +223,9 @@ static const CGFloat kZJPageControlDefaultAnimationDuration = 0.3f;
 }
 
 - (void)setNumberOfPages:(NSInteger)numberOfPages {
+    if (numberOfPages < 0) {
+        return;
+    }
     _numberOfPages = numberOfPages;
     [self setNeedsDisplay];
 }
@@ -248,12 +248,12 @@ static const CGFloat kZJPageControlDefaultAnimationDuration = 0.3f;
 #pragma mark - Public Methods
 
 - (void)setCurrentPage:(NSInteger)currentPage animated:(BOOL)animated {
-    if (self.numberOfPages <= 0 || currentPage > self.numberOfPages - 1 || currentPage < 0 || _currentPage == currentPage) {
+    if (currentPage < 0 || currentPage > self.numberOfPages - 1 || currentPage == _currentPage) {
         return;
     }
     _lastPage = _currentPage;
     _currentPage = currentPage;
-    [self movePageWithAnimated:animated];
+    [self _moveToPageWithAnimated:animated];
 }
 
 @end

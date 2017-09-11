@@ -12,9 +12,7 @@ IB_DESIGNABLE
 @interface ZJPageControl : UIControl
 
 @property (nonatomic, assign) IBInspectable CGFloat lineWidth;
-
 @property (nonatomic, assign) IBInspectable CGFloat radius;
-
 @property (nonatomic, assign) IBInspectable CGFloat padding;
 
 @property(nonatomic, assign) IBInspectable NSInteger numberOfPages;
